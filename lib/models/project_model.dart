@@ -13,7 +13,6 @@ class ProjectModel {
     DocumentSnapshot documentSnapshot,
   ) {
     var task = documentSnapshot.data() as Map;
-    // print('ininih ${task.toString()}');
     projectId = documentSnapshot.id;
     name = task["title"];
   }
