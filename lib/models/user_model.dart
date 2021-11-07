@@ -1,23 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:limasembilan_todo_app/shared/constants.dart';
 
-class TaskModel {
-  late String userId;
-  String username = '';
-  String role = Role.user;
-
-  TaskModel(
+class UserModel {
+  UserModel({
     this.userId,
-    this.username,
+    this.username = '',
     this.role,
-  );
+    this.uniqKey,
+  });
 
-  TaskModel.fromDocumentSnapshot(
+  String? userId;
+  String? username;
+  String? uniqKey;
+  String? role;
+
+  UserModel.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,
   ) {
     var task = documentSnapshot.data() as Map;
     userId = documentSnapshot.id;
     username = task["username"];
     role = task["role"];
+    uniqKey = task["uniq_key"];
   }
 }

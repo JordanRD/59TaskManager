@@ -17,6 +17,7 @@ class AppColor {
   static const Color primaryColor = Color.fromARGB(255, 94, 139, 83);
   static const Color lightPrimaryColor = Color.fromARGB(255, 137, 203, 121);
   static const Color shadowColor = Color.fromARGB(255, 216, 216, 216);
+  static const Color whiteBackround = Color.fromARGB(255, 250, 250, 250);
   static const Color text = Color.fromARGB(255, 49, 59, 47);
   static const Color textSecondary = Color.fromARGB(255, 140, 140, 140);
   static const Color iconSecondary = Color.fromARGB(255, 99, 110, 91);
@@ -43,7 +44,6 @@ class AppStyle {
 // .Fatigue-Green-3-rgba { color: rgba(99, 110, 91, 1); }
 // .Fatigue-Green-4-rgba { color: rgba(111, 123, 102, 1); }
 // .Fatigue-Green-5-rgba { color: rgba(75, 84, 70, 1); }
-
 
 /* Color Theme Swatches in RGBA */
 // .SAVVINA-1-rgba { color: rgba(242, 242, 242, 1); }

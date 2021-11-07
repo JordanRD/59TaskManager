@@ -3,17 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ProjectModel {
   String? projectId;
   String? name;
+  List<String>? contributors;
 
   ProjectModel({
     this.projectId,
     this.name,
+    this.contributors = const [],
   });
 
   ProjectModel.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,
   ) {
-    var task = documentSnapshot.data() as Map;
+    var project = documentSnapshot.data() as Map;
     projectId = documentSnapshot.id;
-    name = task["title"];
+    name = project["name"];
+    contributors = project["contributors"] ?? [];
   }
 }
