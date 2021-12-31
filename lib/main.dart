@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
         );
       }
       return GetMaterialApp(
-        title: 'Lima Sembilan',
-        debugShowCheckedModeBanner: false,
+        title: 'lima|sembilan',
+        // debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.grey,
           primaryColor: AppColor.primaryColor,

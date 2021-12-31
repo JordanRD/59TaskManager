@@ -11,12 +11,16 @@ class ProjectModel {
     this.contributors = const [],
   });
 
+  // static toMap(String name, List<String> contributors) {
+  //   return {'name': name, 'contributors': contributors};
+  // }
+
   ProjectModel.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,
   ) {
     var project = documentSnapshot.data() as Map;
     projectId = documentSnapshot.id;
     name = project["name"];
-    contributors = project["contributors"] ?? [];
+    contributors = List<String>.from(project['contributors'] ?? []);
   }
 }

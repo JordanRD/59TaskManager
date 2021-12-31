@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SubTaskModel {
   late String subTaskId;
-  late int? createDate;
+  String completedBy = '';
   String title = '';
   late bool isCompleted;
 
@@ -10,6 +10,7 @@ class SubTaskModel {
     this.subTaskId,
     this.title,
     this.isCompleted,
+    this.completedBy,
   );
 
   SubTaskModel.fromDocumentSnapshot(
@@ -19,6 +20,21 @@ class SubTaskModel {
     subTaskId = documentSnapshot.id;
     title = task["title"];
     isCompleted = task["is_completed"];
-    createDate = task["create_date"];
+    completedBy = task['completed_by'];
+  }
+
+  SubTaskModel.fromMap(Map task) {
+    subTaskId = task['id'];
+    title = task["title"];
+    isCompleted = task["is_completed"];
+    completedBy = task['completed_by'];
+  }
+  Map toMap() {
+    return {
+      'id': subTaskId,
+      'title': title,
+      'is_completed': isCompleted,
+      'completed_by': completedBy,
+    };
   }
 }

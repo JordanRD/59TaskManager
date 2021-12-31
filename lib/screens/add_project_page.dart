@@ -6,85 +6,131 @@ import 'package:image_picker/image_picker.dart';
 import 'package:limasembilan_todo_app/controller/add_project_page_controller.dart';
 import 'package:limasembilan_todo_app/controller/user_controller.dart';
 import 'package:limasembilan_todo_app/models/user_model.dart';
+import 'package:limasembilan_todo_app/shared/app_theme.dart';
 
 class AddProjectPage extends StatelessWidget {
   const AddProjectPage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    AddProjectPageController addProjectC = Get.put(AddProjectPageController());
+    Get.put(AddProjectPageController());
     UserController userC = Get.find<UserController>();
-    return Scaffold(
-      body: SingleChildScrollView(child: Obx(() {
-        return Container(
-          color: Colors.cyan,
-          width: MediaQuery.of(context).size.width,
-          constraints:
-              BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-          padding:
-              const EdgeInsets.only(left: 30, right: 30, top: 60, bottom: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Add Project'),
-              const SizedBox(height: 30),
-              Container(
-                alignment: Alignment.center,
-                child: Stack(
-                  children: [
-                    Image.file(
-                      File(addProjectC.imageFile.value.path),
-                      width: 150,
-                      key: ValueKey(addProjectC.imageFile.value.path),
-                      height: 150,
-                      fit: BoxFit.cover,
-                      errorBuilder: (BuildContext context, Object exception,
-                          StackTrace? stackTrace) {
-                        return const Text('Your error widget...');
-                      },
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        XFile? imageFile =
-                            await picker.pickImage(source: ImageSource.gallery);
-                        if (imageFile != null) {
-                          addProjectC.imageFile.value = imageFile;
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(30),
+    return GetBuilder<AddProjectPageController>(
+        builder: (AddProjectPageController controller) {
+      return Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            // color: Colors.cyan,
+            width: MediaQuery.of(context).size.width,
+            constraints:
+                BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+            padding:
+                const EdgeInsets.only(left: 30, right: 30, top: 60, bottom: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'New Project',
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: TextSize.heading2,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const SizedBox(height: 15),
+                const Text('Name'),
+                TextField(
+                  controller: controller.nameController,
+                  decoration: const InputDecoration(
+                    hintText: 'name of the project',
+                  ),
+                ),
+                const SizedBox(height: 30),
+                const Text('Select Contributors'),
+                const SizedBox(height: 15),
+                SizedBox(
+                  height: 30,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OverflowBox(
+                          maxWidth: MediaQuery.of(context).size.width,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: userC.users.length,
+                            itemBuilder: (context, idx) {
+                              UserModel user = userC.users[idx];
+                              bool isSelected = controller.selectedContributors
+                                  .contains(user.userId);
+                              Color backgroundColor = isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.white;
+                              Color fontColor = isSelected
+                                  ? Colors.white
+                                  : Theme.of(context).primaryColor;
+                              debugPrint('ini' +
+                                  controller.selectedContributors.toString());
+                              return Container(
+                                key: ValueKey(user.uniqKey),
+                                margin: const EdgeInsets.only(right: 10),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(15),
+                                  onTap: () {
+                                    if (isSelected) {
+                                      controller.selectedContributors
+                                          .removeWhere((userId) =>
+                                              userId == user.userId);
+                                    } else {
+                                      controller.selectedContributors
+                                          .add(user.userId!);
+                                    }
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: backgroundColor,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 0),
+                                    child: Center(
+                                        child: Text(
+                                      user.username!,
+                                      style: TextStyle(color: fontColor),
+                                    )),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        child: const Icon(Icons.add, color: Colors.white),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                InkWell(
+                  onTap: controller.addProject,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                  ],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 15,
+                    ),
+                    child: const Text(
+                      'Create Project',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-              const TextField(
-                decoration: InputDecoration(
-                  hintText: 'title',
-                ),
-              ),
-              const SizedBox(height: 30),
-              const Text('Add Contributor'),
-              ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: userC.users.length,
-                  itemBuilder: (context, idx) {
-                    UserModel user = userC.users[idx];
-                    return Container(
-                      margin: const EdgeInsets.only(left: 5),
-                      color: Colors.red,
-                      child: Text(user.username!),
-                    );
-                  })
-            ],
+              ],
+            ),
           ),
-        );
-      })),
-    );
+        ),
+      );
+    });
   }
 }

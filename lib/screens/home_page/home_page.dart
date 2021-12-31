@@ -13,6 +13,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('homepage');
     HomePageController homePageC = Get.put(HomePageController());
     Get.put(ProjectController(), permanent: true);
     Get.put(UserController(), permanent: true);

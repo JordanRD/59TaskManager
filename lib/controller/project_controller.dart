@@ -11,12 +11,29 @@ class ProjectController extends GetxController {
   RxList<ProjectModel> projects = <ProjectModel>[].obs;
   AuthController authC = Get.find<AuthController>();
 
+  Future<String?> addProject(String name, List<String> contributors) async {
+    try {
+      var response = await projectInstance
+          .add({'name': name, 'contributors': contributors});
+      return response.id;
+    } catch (e) {
+      return null;
+    }
+  }
+
   _getUsersProject(UserModel user) {
+    print(user);
     if (user.role == Role.admin) {
       projectInstance.snapshots().listen((QuerySnapshot querySnapshot) {
-        projects.value = querySnapshot.docs
-            .map((e) => ProjectModel.fromDocumentSnapshot(e))
-            .toList();
+        print('project change detected');
+        print(querySnapshot.docs.length);
+        List<ProjectModel> arr = [];
+        for (var e in querySnapshot.docs) {
+          print('loop');
+          arr.add(ProjectModel.fromDocumentSnapshot(e));
+          print('loop1');
+        }
+        projects.value = arr;
       });
     } else {
       projectInstance
@@ -31,11 +48,12 @@ class ProjectController extends GetxController {
   }
 
   @override
-  void onInit() {
+  void onReady() {
+    print('deimdkddr');
     _getUsersProject(authC.loggedUser.value);
     ever(authC.loggedUser, (UserModel user) {
       _getUsersProject(authC.loggedUser.value);
     });
-    super.onInit();
+    super.onReady();
   }
 }

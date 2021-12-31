@@ -2,14 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TextSize {
-  static const double title1 = 64;
-  static const double heading1 = 42;
-  static const double heading2 = 32;
-  static const double heading3 = 24;
-  static const double heading4 = 18;
-  static const double body1 = 20;
-  static const double body2 = 16;
-  static const double body3 = 13;
+  // static const double title1 = 64;
+  // static const double heading1 = 42;
+  // static const double heading2 = 32;
+  // static const double heading3 = 24;
+  // static const double heading4 = 18;
+  // static const double body1 = 20;
+  // static const double body2 = 16;
+  // static const double body3 = 13;
+  static const double title1 = 48.83;
+  static const double heading1 = 39.06;
+  static const double heading2 = 31.25;
+  static const double heading3 = 25;
+  static const double heading4 = 20;
+  static const double body1 = 16;
+  static const double body2 = 12.80;
+  static const double body3 = 10.24;
 }
 
 class AppColor {

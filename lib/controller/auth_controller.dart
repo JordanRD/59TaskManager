@@ -11,23 +11,29 @@ class AuthController extends GetxController {
   RxBool loading = true.obs;
 
   _autoLogin(String userId) {
+    print('masuk6');
     userInstance
         .doc(userId)
         .snapshots()
         .listen((DocumentSnapshot querySnapshot) {
+      print('masuk7');
       if (querySnapshot.exists) {
+        print('masuk8');
         loggedUser.value = UserModel.fromDocumentSnapshot(querySnapshot);
         loading.value = false;
+        Get.offAllNamed(RouteNames.home);
       } else {
+        print('hhhhh');
         loggedUser.value = UserModel();
         loading.value = false;
-        Get.toNamed(RouteNames.login);
+        Get.offAllNamed(RouteNames.login);
       }
     });
   }
 
   Future<UserModel?> getUserByUsername(String username) async {
     try {
+      print('masuk login');
       var response =
           await userInstance.where('username', isEqualTo: username).get();
       var userData = response.docs.first;
@@ -40,16 +46,27 @@ class AuthController extends GetxController {
   @override
   void onReady() {
     var userId = DeviceStorage().box.read('user_id');
+    print('masuk $userId');
     if (userId != null) {
+      print('masuk1');
       _autoLogin(userId);
+    } else {
+      print('masuk4');
+      loggedUser.value = UserModel();
+      loading.value = false;
+      Get.offAllNamed(RouteNames.login);
     }
+    print('masuk2322');
     DeviceStorage().box.listenKey('user_id', (userId) {
+      print('masuk2');
       if (userId != null) {
+        print('masuk3');
         _autoLogin(userId);
       } else {
+        print('masuk4');
         loggedUser.value = UserModel();
         loading.value = false;
-        Get.toNamed(RouteNames.login);
+        Get.offAllNamed(RouteNames.login);
       }
     });
     super.onReady();
