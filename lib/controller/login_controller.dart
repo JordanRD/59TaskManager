@@ -42,6 +42,7 @@ class LoginController extends GetxController {
         loading.value = false;
         return;
       }
+      print('onTapLogin');
       DeviceStorage().box.write('user_id', user.userId);
       loading.value = false;
     }

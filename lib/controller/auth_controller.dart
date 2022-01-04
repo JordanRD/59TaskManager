@@ -58,7 +58,7 @@ class AuthController extends GetxController {
     }
     print('masuk2322');
     DeviceStorage().box.listenKey('user_id', (userId) {
-      print('masuk2');
+      print('masuk2 $userId');
       if (userId != null) {
         print('masuk3');
         _autoLogin(userId);
@@ -70,5 +70,9 @@ class AuthController extends GetxController {
       }
     });
     super.onReady();
+  }
+
+  void logout() {
+    DeviceStorage().box.remove('user_id');
   }
 }

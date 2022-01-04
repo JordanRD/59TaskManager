@@ -1,7 +1,10 @@
 import 'package:get/get.dart';
+import 'package:limasembilan_todo_app/controller/project_controller.dart';
 import 'package:limasembilan_todo_app/models/project_model.dart';
 import 'package:limasembilan_todo_app/models/task_model.dart';
 import 'package:limasembilan_todo_app/services/firebase_instances.dart';
+import 'package:limasembilan_todo_app/shared/alerts.dart';
+import 'package:limasembilan_todo_app/shared/app_theme.dart';
 
 enum ProjectDetailFilter { onProgress, done }
 
@@ -11,6 +14,7 @@ class ProjectDetailController extends GetxController {
   final currentTask = <TaskModel>[].obs;
   final filteredTask = <TaskModel>[].obs;
   final filterBy = ProjectDetailFilter.onProgress.obs;
+  final projectC = Get.find<ProjectController>();
   @override
   void onInit() {
     projectInstance
@@ -21,6 +25,7 @@ class ProjectDetailController extends GetxController {
         currentProject.value = ProjectModel.fromDocumentSnapshot(event);
       } else {
         currentProject.value = ProjectModel();
+        Get.back();
       }
     });
 
@@ -44,17 +49,15 @@ class ProjectDetailController extends GetxController {
     });
 
     everAll([currentTask, filterBy], (val) {
-      print('hehe');
-      print(filterBy.value);
+      // print('hehe');
+      // print(filterBy.value);
       filteredTask.value = currentTask.where((task) {
         print(task.subTask.every((subTask) => subTask.isCompleted));
         switch (filterBy.value) {
           case ProjectDetailFilter.onProgress:
-            return task.subTask.isEmpty ||
-                task.subTask.any((subTask) => !subTask.isCompleted);
+            return !task.isCompleted;
           case ProjectDetailFilter.done:
-            return task.subTask.isNotEmpty &&
-                task.subTask.every((subTask) => subTask.isCompleted);
+            return task.isCompleted;
           default:
             return false;
         }
@@ -63,5 +66,30 @@ class ProjectDetailController extends GetxController {
       update();
     });
     super.onInit();
+  }
+
+  removeContributor(String userId) async {
+    if (userId.isEmpty) {
+      return;
+    }
+    final resp = await projectC.updateProject(currentProject.value.projectId!, {
+      'contributors': [...currentProject.value.contributors!]
+        ..removeWhere((element) => element == userId),
+    });
+    if (!resp) {
+      showAlert('Alert', 'Update Failed', AppColor.textDanger);
+    }
+  }
+
+  void addContributor(String userId) async {
+    if (userId.isEmpty) {
+      return;
+    }
+    final resp = await projectC.updateProject(currentProject.value.projectId!, {
+      'contributors': [...currentProject.value.contributors!, userId]
+    });
+    if (!resp) {
+      showAlert('Alert', 'Update Failed', AppColor.textDanger);
+    }
   }
 }

@@ -11,6 +11,16 @@ class ProjectController extends GetxController {
   RxList<ProjectModel> projects = <ProjectModel>[].obs;
   AuthController authC = Get.find<AuthController>();
 
+  Future<bool> updateProject(
+      String projectId, Map<String, dynamic> updatingData) async {
+    try {
+      await projectInstance.doc(projectId).update(updatingData);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<String?> addProject(String name, List<String> contributors) async {
     try {
       var response = await projectInstance

@@ -17,6 +17,7 @@ class UserController extends GetxController {
     userInstance.snapshots().listen((QuerySnapshot<Object?> qShot) {
       users.value =
           qShot.docs.map((e) => UserModel.fromDocumentSnapshot(e)).toList();
+      update();
     });
   }
 }

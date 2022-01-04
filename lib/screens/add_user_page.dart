@@ -1,21 +1,15 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:limasembilan_todo_app/controller/add_project_page_controller.dart';
-import 'package:limasembilan_todo_app/controller/user_controller.dart';
-import 'package:limasembilan_todo_app/models/user_model.dart';
+import 'package:limasembilan_todo_app/controller/add_user_page_controller.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
 
-class AddProjectPage extends StatelessWidget {
-  const AddProjectPage({Key? key}) : super(key: key);
+class AddUserPage extends StatelessWidget {
+  const AddUserPage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    Get.put(AddProjectPageController());
-    UserController userC = Get.find<UserController>();
-    return GetBuilder<AddProjectPageController>(
-        builder: (AddProjectPageController controller) {
+    Get.put(AddUserPageController());
+    return GetBuilder<AddUserPageController>(
+        builder: (AddUserPageController controller) {
       return Scaffold(
         body: SingleChildScrollView(
           child: Container(
@@ -29,7 +23,7 @@ class AddProjectPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'New Project',
+                  'New User',
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontSize: TextSize.heading2,
@@ -38,15 +32,15 @@ class AddProjectPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
                 // const SizedBox(height: 15),
-                const Text('Name'),
+                const Text('Username'),
                 TextField(
                   controller: controller.nameController,
                   decoration: const InputDecoration(
-                    hintText: 'name of the project',
+                    hintText: 'username',
                   ),
                 ),
                 const SizedBox(height: 30),
-                const Text('Select Contributors'),
+                const Text('Select Role'),
                 const SizedBox(height: 15),
                 SizedBox(
                   height: 30,
@@ -58,32 +52,27 @@ class AddProjectPage extends StatelessWidget {
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 30),
                             scrollDirection: Axis.horizontal,
-                            itemCount: userC.users.length,
+                            itemCount: controller.roleInList.length,
                             itemBuilder: (context, idx) {
-                              UserModel user = userC.users[idx];
-                              bool isSelected = controller.selectedContributors
-                                  .contains(user.userId);
+                              String role = controller.roleInList[idx];
+                              bool isSelected =
+                                  controller.selectedRole.value == role;
                               Color backgroundColor = isSelected
                                   ? Theme.of(context).primaryColor
                                   : Colors.white;
                               Color fontColor = isSelected
                                   ? Colors.white
                                   : Theme.of(context).primaryColor;
-                              debugPrint('ini' +
-                                  controller.selectedContributors.toString());
+
                               return Container(
-                                key: ValueKey(user.uniqKey),
+                                key: ValueKey(role),
                                 margin: const EdgeInsets.only(right: 10),
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(15),
                                   onTap: () {
-                                    if (isSelected) {
-                                      controller.selectedContributors
-                                          .removeWhere((userId) =>
-                                              userId == user.userId);
-                                    } else {
-                                      controller.selectedContributors
-                                          .add(user.userId!);
+                                    if (!isSelected) {
+                                      controller.selectedRole.value = role;
+                                      controller.update();
                                     }
                                   },
                                   child: Container(
@@ -96,7 +85,7 @@ class AddProjectPage extends StatelessWidget {
                                         horizontal: 15, vertical: 0),
                                     child: Center(
                                         child: Text(
-                                      user.username!,
+                                      role,
                                       style: TextStyle(color: fontColor),
                                     )),
                                   ),
@@ -111,7 +100,7 @@ class AddProjectPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
                 InkWell(
-                  onTap: controller.addProject,
+                  onTap: controller.addUser,
                   child: Ink(
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
@@ -122,7 +111,7 @@ class AddProjectPage extends StatelessWidget {
                       vertical: 15,
                     ),
                     child: const Text(
-                      'Create Project',
+                      'Create User',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

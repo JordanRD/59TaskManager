@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:limasembilan_todo_app/controller/auth_controller.dart';
@@ -18,10 +19,14 @@ class ProjectTab extends StatelessWidget {
       List<ProjectModel> projects = projectC.projects;
       debugPrint(projects.length.toString());
       return Container(
-        padding: const EdgeInsets.only(right: 30, left: 30, top: 60),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.only(
+          right: 30,
+          left: 30,
+        ),
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
           children: [
+            const SizedBox(height: 30),
             Text(
               'Projects',
               style: TextStyle(
@@ -30,57 +35,55 @@ class ProjectTab extends StatelessWidget {
                 color: Theme.of(context).primaryColor,
               ),
             ),
-            const SizedBox(height: 15),
-            Expanded(
-              child: GridView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: projects.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 3 / 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                  ),
-                  itemBuilder: (context, idx) {
-                    var project = projects[idx];
-                    return InkWell(
-                      onTap: () {
-                        Get.toNamed(RouteNames.projectDetail+'/${project.projectId}');
-                      },
-                      borderRadius: BorderRadius.circular(15),
-                      child: Ink(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [AppStyle.defaultShadow],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              project.name ?? '',
-                              style: const TextStyle(
-                                fontSize: TextSize.heading4,
-                              ),
-                            ),
-                            Text(
-                              '${project.contributors!.length} contributors',
-                              style: const TextStyle(
-                                fontSize: TextSize.body2,
-                                color: AppColor.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
+            const SizedBox(height: 30),
+            StaggeredGrid.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 15,
+              crossAxisSpacing: 15,
+              children: projectC.projects
+                  .map((project) => _buildProjectCard(project))
+                  .toList(),
             )
           ],
         ),
       );
     });
+  }
+
+  Widget _buildProjectCard(ProjectModel project) {
+    return InkWell(
+      onTap: () {
+        Get.toNamed(RouteNames.projectDetail + '/${project.projectId}');
+      },
+      borderRadius: BorderRadius.circular(15),
+      child: Ink(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [AppStyle.defaultShadow],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              project.name ?? '',
+              style: const TextStyle(
+                fontSize: TextSize.heading4,
+              ),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              '${project.contributors!.length} contributors',
+              style: const TextStyle(
+                fontSize: TextSize.body2,
+                color: AppColor.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

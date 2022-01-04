@@ -16,10 +16,18 @@ class UserModel {
   UserModel.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,
   ) {
-    var task = documentSnapshot.data() as Map;
+    var user = documentSnapshot.data() as Map;
     userId = documentSnapshot.id;
-    username = task["username"];
-    role = task["role"];
-    uniqKey = task["uniq_key"];
+    username = user["username"];
+    role = user["role"];
+    uniqKey = user["uniq_key"];
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'username': username,
+      'role': role,
+      'uniq_key': uniqKey,
+    };
   }
 }

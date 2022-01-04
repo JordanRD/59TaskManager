@@ -30,7 +30,9 @@ class SelectBottomSheet extends StatelessWidget {
                 },
               ),
               const SizedBox(width: 30),
-              _buildSelectButton(context, text: 'New User', onTap: () {}),
+              _buildSelectButton(context, text: 'New User', onTap: () {
+                Get.toNamed(RouteNames.addUser);
+              }),
             ],
           )),
     );

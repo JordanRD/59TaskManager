@@ -7,6 +7,7 @@ import 'package:limasembilan_todo_app/screens/home_page/project_tab.dart';
 import 'package:limasembilan_todo_app/screens/home_page/select_bottom_sheet.dart';
 import 'package:limasembilan_todo_app/screens/home_page/user_tab.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
+import 'package:indexed/indexed.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -42,13 +43,10 @@ class HomePage extends StatelessWidget {
               homePageC.currentIndex.value = idx;
             },
           ),
-          body: IndexedStack(
-            index: homePageC.currentIndex.value,
-            children: const [
-              ProjectTab(),
-              UserTab(),
-            ],
-          ),
+          body: const [
+            ProjectTab(),
+            UserTab(),
+          ][homePageC.currentIndex.value],
         ));
   }
 
