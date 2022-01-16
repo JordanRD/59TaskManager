@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:limasembilan_todo_app/controller/auth_controller.dart';
 import 'package:limasembilan_todo_app/controller/project_controller.dart';
+import 'package:limasembilan_todo_app/controller/user_controller.dart';
 import 'package:limasembilan_todo_app/models/project_model.dart';
 import 'package:limasembilan_todo_app/routes/app_route.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
@@ -51,6 +52,11 @@ class ProjectTab extends StatelessWidget {
   }
 
   Widget _buildProjectCard(ProjectModel project) {
+    final users = Get.find<UserController>();
+    final contributorsCount = project.contributors!.fold(
+        0,
+        (int p, ids) =>
+            users.users.any((user) => user.userId == ids) ? (p + 1) : p);
     return InkWell(
       onTap: () {
         Get.toNamed(RouteNames.projectDetail + '/${project.projectId}');
@@ -75,7 +81,7 @@ class ProjectTab extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             Text(
-              '${project.contributors!.length} contributors',
+              '${contributorsCount} contributors',
               style: const TextStyle(
                 fontSize: TextSize.body2,
                 color: AppColor.textSecondary,

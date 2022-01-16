@@ -7,6 +7,7 @@ import 'package:limasembilan_todo_app/screens/login_page.dart';
 import 'package:limasembilan_todo_app/screens/project_detail_page/add_task_page.dart';
 import 'package:limasembilan_todo_app/screens/project_detail_page/project_detail_page.dart';
 import 'package:limasembilan_todo_app/screens/project_detail_page/task_detail_page.dart';
+import 'package:limasembilan_todo_app/screens/user_detail_page/user_detail_page.dart';
 
 class RouteNames {
   static const String home = '/home';
@@ -17,6 +18,7 @@ class RouteNames {
   static const String addTask = '/add_task';
   static const String taskDetail = '/task_detail';
   static const String addUser = '/add_user';
+  static const String userDetail = '/user_detail';
 }
 
 List<GetPage> appRoutes = [
@@ -58,6 +60,11 @@ List<GetPage> appRoutes = [
   GetPage(
     name: RouteNames.taskDetail + '/:taskId',
     page: () => const TaskDetailPage(),
+    transition: Transition.noTransition,
+  ),
+  GetPage(
+    name: RouteNames.userDetail + '/:userId',
+    page: () => const UserDetailPage(),
     transition: Transition.noTransition,
   ),
 ];

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:limasembilan_todo_app/controller/auth_controller.dart';
@@ -20,6 +23,7 @@ class TaskDetailController extends GetxController {
   final userC = Get.find<AuthController>();
   final loading = false.obs;
   final subTaskController = TextEditingController();
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? subs;
 
   void toggleCompleteSubTask(SubTaskModel subTask) async {
     // subTask.isCompleted = !subTask.isCompleted;
@@ -55,10 +59,17 @@ class TaskDetailController extends GetxController {
   }
 
   @override
+  void onClose() {
+    subs?.cancel();
+    super.onClose();
+  }
+
+  @override
   void onReady() {
     if (projectC.currentProject.value.projectId != null &&
         Get.parameters['taskId'] != null) {
-      projectInstance
+      subs?.cancel();
+      subs = projectInstance
           .doc(projectC.currentProject.value.projectId)
           .collection('tasks')
           .doc(Get.parameters['taskId'])
@@ -75,6 +86,8 @@ class TaskDetailController extends GetxController {
         }
         update();
       });
+    } else {
+      subs?.cancel();
     }
     super.onReady();
   }

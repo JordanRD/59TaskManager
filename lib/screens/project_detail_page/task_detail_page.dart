@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:limasembilan_todo_app/controller/auth_controller.dart';
 import 'package:limasembilan_todo_app/controller/task_detail_controller.dart';
 import 'package:limasembilan_todo_app/models/sub_task_model.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
+import 'package:limasembilan_todo_app/shared/constants.dart';
 
 class TaskDetailPage extends StatelessWidget {
   const TaskDetailPage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     Get.put(TaskDetailController());
+    final authC = Get.find<AuthController>();
     return Scaffold(
       body: GetBuilder<TaskDetailController>(
           builder: (TaskDetailController controller) {
@@ -125,18 +128,23 @@ class TaskDetailPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: () {
-                              controller.onClickDeleteTask();
-                            },
-                            child: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.white,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              shape: const StadiumBorder(),
-                              primary: AppColor.textDanger,
-                              padding: const EdgeInsets.all(5),
+                          Visibility(
+                            visible:
+                                authC.loggedUser.value.role == Role.admin ||
+                                    authC.loggedUser.value.role == Role.support,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                controller.onClickDeleteTask();
+                              },
+                              child: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.white,
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                shape: const StadiumBorder(),
+                                primary: AppColor.textDanger,
+                                padding: const EdgeInsets.all(5),
+                              ),
                             ),
                           ),
                         ],
@@ -187,8 +195,9 @@ class TaskDetailPage extends StatelessWidget {
                               fontSize: TextSize.heading4,
                               color: AppColor.primaryColor,
                             ),
-                            content:  Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
+                            content: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
                               child: TextField(
                                 controller: controller.subTaskController,
                                 decoration: const InputDecoration(

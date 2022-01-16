@@ -14,6 +14,12 @@ class ProjectModel {
   // static toMap(String name, List<String> contributors) {
   //   return {'name': name, 'contributors': contributors};
   // }
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'contributors': [],
+    };
+  }
 
   ProjectModel.fromDocumentSnapshot(
     DocumentSnapshot documentSnapshot,

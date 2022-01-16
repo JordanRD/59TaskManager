@@ -30,21 +30,26 @@ class MyApp extends StatelessWidget {
       UserModel user = authC.loggedUser.value;
       // debugPrint('running ${user.userId}');
       if (authC.loading.value) {
-        return Container(
-          color: Colors.white,
-          child: const Center(
-            child: SizedBox(
-              height: 60,
-              width: 60,
-              child: CircularProgressIndicator(
-                color: AppColor.primaryColor,
+        return MaterialApp(
+          title: 'lima | sembilan',
+          home: Material(
+            child: Container(
+              color: Colors.white,
+              child: const Center(
+                child: Text(
+                  'lima | sembilan',
+                  style: TextStyle(
+                    color: AppColor.primaryColor,
+                    fontSize: TextSize.heading3,
+                  ),
+                ),
               ),
             ),
           ),
         );
       }
       return GetMaterialApp(
-        title: 'lima|sembilan',
+        title: 'lima | sembilan',
         // debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.grey,

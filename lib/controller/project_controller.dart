@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:limasembilan_todo_app/controller/auth_controller.dart';
@@ -10,7 +12,7 @@ class ProjectController extends GetxController {
   CollectionReference projectInstance = FirebaseInstance().projects;
   RxList<ProjectModel> projects = <ProjectModel>[].obs;
   AuthController authC = Get.find<AuthController>();
-
+  StreamSubscription<QuerySnapshot<Object?>>? subs;
   Future<bool> updateProject(
       String projectId, Map<String, dynamic> updatingData) async {
     try {
@@ -33,20 +35,24 @@ class ProjectController extends GetxController {
 
   _getUsersProject(UserModel user) {
     print(user);
+    subs?.cancel();
     if (user.role == Role.admin) {
-      projectInstance.snapshots().listen((QuerySnapshot querySnapshot) {
+      subs = projectInstance.snapshots().listen((QuerySnapshot querySnapshot) {
         print('project change detected');
         print(querySnapshot.docs.length);
         List<ProjectModel> arr = [];
-        for (var e in querySnapshot.docs) {
-          print('loop');
-          arr.add(ProjectModel.fromDocumentSnapshot(e));
-          print('loop1');
+        print('ininiinin ${user.role}');
+        if (user.role == Role.admin) {
+          for (var e in querySnapshot.docs) {
+            print('loop');
+            arr.add(ProjectModel.fromDocumentSnapshot(e));
+            print('loop1');
+          }
         }
         projects.value = arr;
       });
     } else {
-      projectInstance
+      subs = projectInstance
           .where('contributors', arrayContains: user.userId)
           .snapshots()
           .listen((QuerySnapshot querySnapshot) {
@@ -60,8 +66,11 @@ class ProjectController extends GetxController {
   @override
   void onReady() {
     print('deimdkddr');
+    // subs?.cancel();
     _getUsersProject(authC.loggedUser.value);
     ever(authC.loggedUser, (UserModel user) {
+      print('user changeee');
+      // subs?.cancel();
       _getUsersProject(authC.loggedUser.value);
     });
     super.onReady();

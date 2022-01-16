@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:limasembilan_todo_app/controller/auth_controller.dart';
 import 'package:limasembilan_todo_app/controller/project_detail_page_controller.dart';
 import 'package:limasembilan_todo_app/controller/user_controller.dart';
 import 'package:limasembilan_todo_app/models/user_model.dart';
 import 'package:limasembilan_todo_app/routes/app_route.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
+import 'package:limasembilan_todo_app/shared/constants.dart';
 
 class ProjectDetailPage extends StatelessWidget {
   const ProjectDetailPage({Key? key}) : super(key: key);
@@ -13,18 +15,27 @@ class ProjectDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(ProjectDetailController());
     final userC = Get.find<UserController>();
+    final authC = Get.find<AuthController>();
     return GetBuilder<ProjectDetailController>(builder: (controller) {
       controller.filteredTask
           .sort((a, b) => (a.dueDate ?? 0) - (b.dueDate ?? 0));
+      final contributorsCount = controller.currentProject.value.contributors!
+          .fold(
+              0,
+              (int p, ids) =>
+                  userC.users.any((user) => user.userId == ids) ? (p + 1) : p);
 
       return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Get.toNamed(RouteNames.addTask);
-          },
-          backgroundColor: AppColor.primaryColor,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
+        floatingActionButton: authC.loggedUser.value.role == Role.support ||
+                authC.loggedUser.value.role == Role.admin
+            ? FloatingActionButton(
+                onPressed: () {
+                  Get.toNamed(RouteNames.addTask);
+                },
+                backgroundColor: AppColor.primaryColor,
+                child: const Icon(Icons.add, color: Colors.white),
+              )
+            : null,
         body: Container(
           padding: const EdgeInsets.only(top: 60),
           child: Column(
@@ -68,6 +79,84 @@ class ProjectDetailPage extends StatelessWidget {
                               ),
                             ),
                           ],
+                        ),
+                        const SizedBox(width: 10),
+                        Visibility(
+                          visible:
+                              authC.loggedUser.value.role == Role.support ||
+                                  authC.loggedUser.value.role == Role.admin,
+                          child: InkWell(
+                            onTap: () {
+                              controller.projectNameController.text =
+                                  controller.currentProject.value.name ?? '';
+                              Get.defaultDialog(
+                                  title: '',
+                                  titleStyle: const TextStyle(height: 0),
+                                  titlePadding: const EdgeInsets.all(0),
+                                  contentPadding: const EdgeInsets.all(15),
+                                  content: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'project name',
+                                        style: TextStyle(
+                                            fontSize: TextSize.body1,
+                                            color: AppColor.textSecondary),
+                                      ),
+                                      TextField(
+                                        controller:
+                                            controller.projectNameController,
+                                      )
+                                    ],
+                                  ),
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () => Get.back(),
+                                      child: const Icon(
+                                        Icons.chevron_left,
+                                        color: AppColor.textSecondary,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const CircleBorder(),
+                                        primary: Colors.white,
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: authC.loggedUser.value.role ==
+                                          Role.admin,
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            controller.deleteProject(),
+                                        child: Icon(
+                                          Icons.delete_outline,
+                                          color: AppColor.textDanger,
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          shape: const CircleBorder(),
+                                          primary: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () =>
+                                          controller.updateProject(),
+                                      child: const Icon(
+                                        Icons.save_outlined,
+                                        color: AppColor.primaryColor,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const CircleBorder(),
+                                        primary: Colors.white,
+                                      ),
+                                    ),
+                                  ]);
+                            },
+                            child: const Icon(
+                              Icons.edit,
+                              color: AppColor.textSecondary,
+                            ),
+                          ),
                         ),
                         InkWell(
                           onTap: () {
@@ -120,16 +209,29 @@ class ProjectDetailPage extends StatelessWidget {
                                                                     .ellipsis,
                                                           ),
                                                         ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            controller
-                                                                .removeContributor(
-                                                                    e.userId!);
-                                                          },
-                                                          child: const Icon(
-                                                            Icons
-                                                                .remove_circle_outline,
-                                                            color: Colors.red,
+                                                        Visibility(
+                                                          visible: authC
+                                                                      .loggedUser
+                                                                      .value
+                                                                      .role ==
+                                                                  Role
+                                                                      .support ||
+                                                              authC
+                                                                      .loggedUser
+                                                                      .value
+                                                                      .role ==
+                                                                  Role.admin,
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              controller
+                                                                  .removeContributor(
+                                                                      e.userId!);
+                                                            },
+                                                            child: const Icon(
+                                                              Icons
+                                                                  .remove_circle_outline,
+                                                              color: Colors.red,
+                                                            ),
                                                           ),
                                                         )
                                                       ],
@@ -137,15 +239,28 @@ class ProjectDetailPage extends StatelessWidget {
                                                   ))
                                               .toList(),
                                           const SizedBox(height: 15),
-                                          const Text(
-                                            'Assign User',
-                                            style: TextStyle(
-                                              fontSize: TextSize.body1,
-                                              fontWeight: FontWeight.bold,
+                                          Visibility(
+                                            visible: authC.loggedUser.value
+                                                        .role ==
+                                                    Role.support ||
+                                                authC.loggedUser.value.role ==
+                                                    Role.admin,
+                                            child: const Text(
+                                              'Assign User',
+                                              style: TextStyle(
+                                                fontSize: TextSize.body1,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(height: 15),
-                                          ...userNotInCurrentProject
+                                          ...(authC.loggedUser.value.role ==
+                                                          Role.support ||
+                                                      authC.loggedUser.value
+                                                              .role ==
+                                                          Role.admin
+                                                  ? userNotInCurrentProject
+                                                  : [])
                                               .map((e) => Container(
                                                     key: Key(e.userId ?? ''),
                                                     padding:
@@ -195,7 +310,7 @@ class ProjectDetailPage extends StatelessWidget {
                           child: Row(
                             children: [
                               Text(
-                                '${controller.currentProject.value.contributors?.length ?? 0}',
+                                '$contributorsCount',
                                 style: const TextStyle(
                                     color: AppColor.textSecondary,
                                     fontWeight: FontWeight.bold),

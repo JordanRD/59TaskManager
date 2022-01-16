@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:limasembilan_todo_app/models/user_model.dart';
@@ -9,10 +11,12 @@ class AuthController extends GetxController {
   CollectionReference userInstance = FirebaseInstance().users;
   Rx<UserModel> loggedUser = UserModel().obs;
   RxBool loading = true.obs;
+  StreamSubscription<DocumentSnapshot<Object?>>? subs;
 
   _autoLogin(String userId) {
     print('masuk6');
-    userInstance
+    subs?.cancel();
+    subs = userInstance
         .doc(userId)
         .snapshots()
         .listen((DocumentSnapshot querySnapshot) {
@@ -47,6 +51,7 @@ class AuthController extends GetxController {
   void onReady() {
     var userId = DeviceStorage().box.read('user_id');
     print('masuk $userId');
+
     if (userId != null) {
       print('masuk1');
       _autoLogin(userId);
@@ -72,7 +77,14 @@ class AuthController extends GetxController {
     super.onReady();
   }
 
+  @override
+  void onClose() {
+    subs?.cancel();
+    super.onClose();
+  }
+
   void logout() {
+    subs?.cancel();
     DeviceStorage().box.remove('user_id');
   }
 }

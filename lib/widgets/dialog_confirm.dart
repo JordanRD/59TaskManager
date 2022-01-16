@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:limasembilan_todo_app/shared/app_theme.dart';
 
 class DialogConfirm {
   static show(String title,
-      {required void Function() onConfirm, required BuildContext context}) {
+      {required void Function() onConfirm}) {
     HapticFeedback.heavyImpact();
     Get.defaultDialog(
       title: '',
@@ -14,10 +15,10 @@ class DialogConfirm {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       textConfirm: 'Ya',
-      buttonColor: Theme.of(context).primaryColor,
+      buttonColor: AppColor.primaryColor,
       onConfirm: onConfirm,
       textCancel: 'Tidak',
-      cancelTextColor: Theme.of(context).primaryColor,
+      cancelTextColor: AppColor.primaryColor,
     );
   }
 }
