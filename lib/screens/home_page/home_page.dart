@@ -4,12 +4,10 @@ import 'package:limasembilan_todo_app/controller/auth_controller.dart';
 import 'package:limasembilan_todo_app/controller/home_page_controller.dart';
 import 'package:limasembilan_todo_app/controller/project_controller.dart';
 import 'package:limasembilan_todo_app/controller/user_controller.dart';
-import 'package:limasembilan_todo_app/routes/app_route.dart';
 import 'package:limasembilan_todo_app/screens/home_page/project_tab.dart';
 import 'package:limasembilan_todo_app/screens/home_page/select_bottom_sheet.dart';
 import 'package:limasembilan_todo_app/screens/home_page/user_tab.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
-import 'package:indexed/indexed.dart';
 import 'package:limasembilan_todo_app/shared/constants.dart';
 
 class HomePage extends StatelessWidget {

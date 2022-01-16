@@ -4,10 +4,12 @@ import 'package:limasembilan_todo_app/models/sub_task_model.dart';
 class TaskModel {
   late String taskId;
   late int? createDate;
+  int? completedDate;
   String? title;
   String? description;
   bool isCompleted = false;
   int? dueDate;
+  late String completedBy;
   List<SubTaskModel> subTask = <SubTaskModel>[];
 
   TaskModel([
@@ -18,6 +20,8 @@ class TaskModel {
     this.subTask = const [],
     this.createDate = 0,
     this.isCompleted = false,
+    this.completedBy = '',
+    this.completedDate
   ]);
 
   TaskModel.fromDocumentSnapshot(
@@ -29,6 +33,8 @@ class TaskModel {
     description = task["description"];
     createDate = task["create_date"];
     isCompleted = task["is_completed"] ?? false;
+    completedBy = task["completed_by"] ?? '';
+    completedDate = task["completed_date"];
     dueDate = task['due_date'];
     subTask = List<Map>.from(task['sub_task'] ?? [])
         .map<SubTaskModel>((e) => SubTaskModel.fromMap(e))
@@ -37,13 +43,14 @@ class TaskModel {
 
   Map<String, dynamic> toMap() {
     int now = DateTime.now().millisecondsSinceEpoch;
-
     return {
       'create_date': createDate ?? now,
       'due_date': dueDate,
       'title': title,
       'description': description,
       'is_completed': isCompleted,
+      'completed_by': completedBy,
+      'completed_date': completedDate,
       'sub_task': subTask.map((e) => e.toMap()).toList(),
     };
   }

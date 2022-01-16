@@ -1,9 +1,8 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:limasembilan_todo_app/controller/add_project_page_controller.dart';
+import 'package:limasembilan_todo_app/controller/auth_controller.dart';
 import 'package:limasembilan_todo_app/controller/user_controller.dart';
 import 'package:limasembilan_todo_app/models/user_model.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
@@ -14,8 +13,12 @@ class AddProjectPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(AddProjectPageController());
     UserController userC = Get.find<UserController>();
+    AuthController authC = Get.find<AuthController>();
+
     return GetBuilder<AddProjectPageController>(
         builder: (AddProjectPageController controller) {
+      final sortedUser = [...userC.users]..sort((a, b) =>
+          (a.username ?? 'zzzz').compareTo(b.username ?? a.username ?? 'zzzz'));
       return Scaffold(
         body: SingleChildScrollView(
           child: Container(
@@ -40,6 +43,7 @@ class AddProjectPage extends StatelessWidget {
                 // const SizedBox(height: 15),
                 const Text('Name'),
                 TextField(
+                  autofocus: true,
                   controller: controller.nameController,
                   decoration: const InputDecoration(
                     hintText: 'name of the project',
@@ -58,9 +62,9 @@ class AddProjectPage extends StatelessWidget {
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 30),
                             scrollDirection: Axis.horizontal,
-                            itemCount: userC.users.length,
+                            itemCount: sortedUser.length,
                             itemBuilder: (context, idx) {
-                              UserModel user = userC.users[idx];
+                              UserModel user = sortedUser[idx];
                               bool isSelected = controller.selectedContributors
                                   .contains(user.userId);
                               Color backgroundColor = isSelected
@@ -80,7 +84,10 @@ class AddProjectPage extends StatelessWidget {
                                     if (isSelected) {
                                       controller.selectedContributors
                                           .removeWhere((userId) =>
-                                              userId == user.userId);
+                                              userId == user.userId &&
+                                              userId !=
+                                                  authC
+                                                      .loggedUser.value.userId);
                                     } else {
                                       controller.selectedContributors
                                           .add(user.userId!);

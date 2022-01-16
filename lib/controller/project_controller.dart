@@ -26,7 +26,7 @@ class ProjectController extends GetxController {
   Future<String?> addProject(String name, List<String> contributors) async {
     try {
       var response = await projectInstance
-          .add({'name': name, 'contributors': contributors});
+          .add({'name': name, 'contributors': contributors,'create_by':authC.loggedUser.value.userId});
       return response.id;
     } catch (e) {
       return null;
@@ -39,7 +39,7 @@ class ProjectController extends GetxController {
     if (user.role == Role.admin) {
       subs = projectInstance.snapshots().listen((QuerySnapshot querySnapshot) {
         print('project change detected');
-        print(querySnapshot.docs.length);
+        // print(querySnapshot.docs.length);
         List<ProjectModel> arr = [];
         print('ininiinin ${user.role}');
         if (user.role == Role.admin) {

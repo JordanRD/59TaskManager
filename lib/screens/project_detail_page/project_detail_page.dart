@@ -105,6 +105,7 @@ class ProjectDetailPage extends StatelessWidget {
                                             color: AppColor.textSecondary),
                                       ),
                                       TextField(
+                                        autofocus: true,
                                         controller:
                                             controller.projectNameController,
                                       )
@@ -210,17 +211,26 @@ class ProjectDetailPage extends StatelessWidget {
                                                           ),
                                                         ),
                                                         Visibility(
-                                                          visible: authC
-                                                                      .loggedUser
+                                                          visible: (authC
+                                                                          .loggedUser
+                                                                          .value
+                                                                          .role ==
+                                                                      Role
+                                                                          .support ||
+                                                                  authC
+                                                                          .loggedUser
+                                                                          .value
+                                                                          .role ==
+                                                                      Role
+                                                                          .admin) &&
+                                                              e.userId !=
+                                                                  controller
+                                                                      .currentProject
                                                                       .value
-                                                                      .role ==
-                                                                  Role
-                                                                      .support ||
-                                                              authC
-                                                                      .loggedUser
-                                                                      .value
-                                                                      .role ==
-                                                                  Role.admin,
+                                                                      .createBy &&
+                                                              userInCurrentProject
+                                                                      .length >
+                                                                  1,
                                                           child: InkWell(
                                                             onTap: () {
                                                               controller
@@ -370,6 +380,7 @@ class ProjectDetailPage extends StatelessWidget {
                         task.description ?? '-',
                         task.dueDate ?? 0,
                         task.isCompleted,
+                        task.completedDate,
                         onTap: () {
                           Get.toNamed(
                               RouteNames.taskDetail + '/${task.taskId}');
@@ -388,11 +399,15 @@ class ProjectDetailPage extends StatelessWidget {
   }
 
   Widget _buildCard(
-      String title, String description, int dueDate, bool isCompleted,
-      {int doneCount = 0,
-      void Function()? onTap,
-      int totalSubTask = 0,
-      String heroTag = ''}) {
+    String title,
+    String description,
+    int dueDate,
+    bool isCompleted,
+    int? completedDate, {
+    int doneCount = 0,
+    void Function()? onTap,
+    int totalSubTask = 0,
+  }) {
     final dateNow = DateTime.now();
     final parsedDueDate = DateTime.fromMillisecondsSinceEpoch(dueDate);
     final dateNow2 = DateTime(dateNow.year, dateNow.month, dateNow.day);
@@ -439,12 +454,22 @@ class ProjectDetailPage extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.date_range_outlined,
+                  isCompleted
+                      ? Icons.done_all_outlined
+                      : Icons.date_range_outlined,
                   color: dateColor,
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  isToday ? 'Today' : DateFormat.yMMMMd().format(parsedDueDate),
+                  isToday
+                      ? 'Today'
+                      : isCompleted
+                          ? (completedDate.runtimeType == int
+                              ? DateFormat.yMMMMd().format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      completedDate!))
+                              : '-')
+                          : DateFormat.yMMMMd().format(parsedDueDate),
                   // style: TextStyle(color: dateColor),
                 ),
                 Expanded(child: Container()),

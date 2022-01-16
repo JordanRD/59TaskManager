@@ -4,11 +4,13 @@ class ProjectModel {
   String? projectId;
   String? name;
   List<String>? contributors;
+  String? createBy;
 
   ProjectModel({
     this.projectId,
     this.name,
     this.contributors = const [],
+    this.createBy,
   });
 
   // static toMap(String name, List<String> contributors) {
@@ -17,6 +19,7 @@ class ProjectModel {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'create_by': createBy,
       'contributors': [],
     };
   }
@@ -27,6 +30,7 @@ class ProjectModel {
     var project = documentSnapshot.data() as Map;
     projectId = documentSnapshot.id;
     name = project["name"];
+    createBy = project['create_by'];
     contributors = List<String>.from(project['contributors'] ?? []);
   }
 }

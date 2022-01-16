@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:limasembilan_todo_app/controller/user_controller.dart';
 import 'package:limasembilan_todo_app/models/project_model.dart';
 import 'package:limasembilan_todo_app/models/user_model.dart';
-import 'package:limasembilan_todo_app/routes/app_route.dart';
 import 'package:limasembilan_todo_app/services/firebase_instances.dart';
 import 'package:limasembilan_todo_app/services/user_services.dart';
 import 'package:limasembilan_todo_app/shared/alerts.dart';
@@ -34,7 +33,7 @@ class UserDetailPageController extends GetxController {
         } else {
           subs1?.cancel();
           currentUser.value = UserModel();
-          Get.back();
+          Get.back(closeOverlays: true);
           showAlert('Alert', 'User not found!', AppColor.text);
         }
         update();

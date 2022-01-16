@@ -18,6 +18,12 @@ class TaskDetailPage extends StatelessWidget {
           builder: (TaskDetailController controller) {
         final task = controller.selectedTask.value;
         final dateNow = DateTime.now();
+        final completedDate = task.completedDate;
+        String formatedCompletedDate = '-';
+        if (completedDate.runtimeType == int) {
+          final dateObj = DateTime.fromMillisecondsSinceEpoch(completedDate!);
+          formatedCompletedDate = DateFormat.yMMMMd().format(dateObj);
+        }
         final parsedDueDate = DateTime.fromMillisecondsSinceEpoch(
             task.dueDate ?? dateNow.millisecondsSinceEpoch);
         final dateNow2 = DateTime(dateNow.year, dateNow.month, dateNow.day);
@@ -91,62 +97,226 @@ class TaskDetailPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 15),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.date_range_outlined,
-                            size: 15,
-                            color: dateColor,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            formattedDueDate,
-                            style: const TextStyle(fontSize: TextSize.body2),
-                          ),
-                        ],
+                      Visibility(
+                        visible: !task.isCompleted,
+                        maintainSize: true,
+                        maintainState: true,
+                        maintainAnimation: true,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.date_range_outlined,
+                              size: 15,
+                              color: dateColor,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              formattedDueDate,
+                              style: const TextStyle(fontSize: TextSize.body2),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 15),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              controller.onCompleteTaskButtonClick();
-                            },
-                            child: Icon(
-                              Icons.check,
-                              color: task.isCompleted
-                                  ? Colors.white
-                                  : AppColor.primaryColor,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              shape: const StadiumBorder(),
-                              primary: task.isCompleted
-                                  ? AppColor.primaryColor
-                                  : Colors.white,
-                              padding: const EdgeInsets.all(5),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
                           Visibility(
-                            visible:
-                                authC.loggedUser.value.role == Role.admin ||
-                                    authC.loggedUser.value.role == Role.support,
+                            visible: !task.isCompleted,
+                            replacement: Text.rich(
+                              TextSpan(
+                                style:
+                                    const TextStyle(fontSize: TextSize.body3),
+                                text:
+                                    'Completed on\n$formatedCompletedDate\nby ',
+                                children: [
+                                  TextSpan(
+                                    text: task.completedBy.isEmpty
+                                        ? 'unknown'
+                                        : task.completedBy,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                             child: ElevatedButton(
                               onPressed: () {
-                                controller.onClickDeleteTask();
+                                controller.onCompleteTaskButtonClick();
                               },
                               child: const Icon(
-                                Icons.delete_outline,
+                                Icons.check,
                                 color: Colors.white,
                               ),
                               style: ElevatedButton.styleFrom(
                                 shape: const StadiumBorder(),
-                                primary: AppColor.textDanger,
+                                primary: AppColor.primaryColor,
                                 padding: const EdgeInsets.all(5),
                               ),
                             ),
                           ),
+                          Expanded(child: Container()),
+                          const SizedBox(width: 10),
+                          Visibility(
+                            visible: task.isCompleted,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                controller.onCompleteTaskButtonClick();
+                              },
+                              child: const Icon(
+                                Icons.undo_outlined,
+                                color: AppColor.primaryColor,
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                shape: const CircleBorder(),
+                                primary: Colors.white,
+                                padding: const EdgeInsets.all(5),
+                              ),
+                            ),
+                          ),
+                          Visibility(
+                            visible:
+                                authC.loggedUser.value.role == Role.admin ||
+                                    authC.loggedUser.value.role == Role.support,
+                            child: GestureDetector(
+                              onTap: () {
+                                controller.newDesc.text =
+                                    task.description ?? '';
+                                controller.newDueDate.value = task.dueDate ??
+                                    DateTime.now().millisecondsSinceEpoch;
+                                controller.newTitle.text = task.title ?? '';
+                                // controller.onClickDeleteTask();
+                                Get.defaultDialog(
+                                  title: '',
+                                  titlePadding: const EdgeInsets.all(0),
+                                  contentPadding: const EdgeInsets.all(15),
+                                  content: Obx(() {
+                                    final dueDateObj =
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                            controller.newDueDate.value);
+                                    final formattedDueDate =
+                                        DateFormat.yMMMMd().format(dueDateObj);
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'name',
+                                          style: TextStyle(
+                                            fontSize: TextSize.body2,
+                                            color: AppColor.textSecondary,
+                                          ),
+                                        ),
+                                        TextField(
+                                          decoration: const InputDecoration(
+                                            hintText: 'task name',
+                                          ),
+                                          controller: controller.newTitle,
+                                        ),
+                                        const SizedBox(height: 15),
+                                        const Text(
+                                          'description',
+                                          style: TextStyle(
+                                            fontSize: TextSize.body2,
+                                            color: AppColor.textSecondary,
+                                          ),
+                                        ),
+                                        TextField(
+                                          controller: controller.newDesc,
+                                          maxLines: 5,
+                                          decoration: const InputDecoration(
+                                            hintText: 'task description',
+                                          ),
+                                        ),
+                                        const SizedBox(height: 15),
+                                        const Text(
+                                          'due date',
+                                          style: TextStyle(
+                                            fontSize: TextSize.body2,
+                                            color: AppColor.textSecondary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              formattedDueDate,
+                                              style: const TextStyle(
+                                                fontSize: TextSize.body1,
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () async {
+                                                final date =
+                                                    await showDatePicker(
+                                                  context: context,
+                                                  initialDate: dueDateObj,
+                                                  firstDate:
+                                                      parsedDueDate.isAfter(
+                                                              DateTime.now())
+                                                          ? DateTime.now()
+                                                          : parsedDueDate,
+                                                  lastDate: DateTime.now().add(
+                                                      const Duration(
+                                                          days: 365 * 2)),
+                                                );
+                                                if (date != null) {
+                                                  controller.newDueDate.value =
+                                                      date.millisecondsSinceEpoch;
+                                                }
+                                              },
+                                              child: const Icon(
+                                                Icons.calendar_today_outlined,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  }),
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        controller.updateTask();
+                                      },
+                                      child: const Icon(
+                                        Icons.save_outlined,
+                                        color: Colors.white,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const CircleBorder(),
+                                        primary: AppColor.primaryColor,
+                                        padding: const EdgeInsets.all(5),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        controller.onClickDeleteTask();
+                                      },
+                                      child: const Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.white,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const CircleBorder(),
+                                        primary: AppColor.textDanger,
+                                        padding: const EdgeInsets.all(5),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                              child: const Icon(
+                                Icons.edit,
+                                color: AppColor.textSecondary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
                         ],
                       ),
                     ],
@@ -165,12 +335,29 @@ class TaskDetailPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 15),
-                    Text(
-                      '$totalCompletedTask / ${task.subTask.length}',
-                      style: const TextStyle(
-                        fontSize: TextSize.body2,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          '$totalCompletedTask / ${task.subTask.length}',
+                          style: const TextStyle(
+                            fontSize: TextSize.body2,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        InkWell(
+                          onTap: () {
+                            controller.isDeleteSubTask.toggle();
+                            controller.update();
+                          },
+                          child: Icon(
+                            controller.isDeleteSubTask.value
+                                ? Icons.checklist_outlined
+                                : Icons.delete_sweep_outlined,
+                            color: AppColor.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -178,7 +365,11 @@ class TaskDetailPage extends StatelessWidget {
                 ...task.subTask
                     .map<Widget>(
                       (subTask) => _buildCheckRow(
+                        isDeleting: controller.isDeleteSubTask.value,
                         subTask: subTask,
+                        onClickDelete: () {
+                          controller.deleteSubTask(subTask);
+                        },
                         onChanged: (isChecked) {
                           controller.toggleCompleteSubTask(subTask);
                         },
@@ -200,6 +391,7 @@ class TaskDetailPage extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 15),
                               child: TextField(
                                 controller: controller.subTaskController,
+                                autofocus: true,
                                 decoration: const InputDecoration(
                                   hintText: '...',
                                 ),
@@ -243,7 +435,10 @@ class TaskDetailPage extends StatelessWidget {
   }
 
   Widget _buildCheckRow(
-      {required SubTaskModel subTask, void Function(bool?)? onChanged}) {
+      {required SubTaskModel subTask,
+      void Function(bool?)? onChanged,
+      void Function()? onClickDelete,
+      required bool isDeleting}) {
     return Container(
       constraints: const BoxConstraints(minHeight: 50),
       child: Row(
@@ -252,11 +447,16 @@ class TaskDetailPage extends StatelessWidget {
           SizedBox(
             height: 24,
             width: 36,
-            child: Checkbox(
-              value: subTask.isCompleted,
-              onChanged: onChanged,
-              fillColor: MaterialStateProperty.all(AppColor.primaryColor),
-            ),
+            child: (isDeleting
+                ? InkWell(
+                    onTap: onClickDelete,
+                    child: Icon(Icons.remove_circle_outline,
+                        color: AppColor.textDanger))
+                : Checkbox(
+                    value: subTask.isCompleted,
+                    onChanged: onChanged,
+                    fillColor: MaterialStateProperty.all(AppColor.primaryColor),
+                  )),
           ),
           const SizedBox(width: 5),
           Flexible(

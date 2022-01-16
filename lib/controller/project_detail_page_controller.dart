@@ -44,7 +44,7 @@ class ProjectDetailController extends GetxController {
       } else {
         currentProject.value = ProjectModel();
         subs1?.cancel();
-        Get.back();
+        Get.back(closeOverlays: true);
       }
     });
 
@@ -72,7 +72,7 @@ class ProjectDetailController extends GetxController {
       // print('hehe');
       // print(filterBy.value);
       filteredTask.value = currentTask.where((task) {
-        print(task.subTask.every((subTask) => subTask.isCompleted));
+        // print(task.subTask.every((subTask) => subTask.isCompleted));
         switch (filterBy.value) {
           case ProjectDetailFilter.onProgress:
             return !task.isCompleted;
@@ -120,7 +120,7 @@ class ProjectDetailController extends GetxController {
       final resp = await projectService
           .deleteProject(currentProject.value.projectId ?? '');
       if (resp) {
-        Get.back();
+        Get.back(closeOverlays: true);
       } else {
         showAlert('Alert', 'Delete project failed!', AppColor.textDanger);
       }
@@ -134,14 +134,14 @@ class ProjectDetailController extends GetxController {
       return;
     }
     if (newProjectName == currentProject.value.name) {
-      Get.back();
+      Get.back(closeOverlays: true);
       return;
     }
     final projectService = ProjectServices();
     final resp = await projectService.updateProject(
         currentProject.value.projectId ?? '', {'name': newProjectName});
     if (resp) {
-      Get.back();
+      Get.back(closeOverlays: true);
       showAlert('Success', 'Update project success!', AppColor.text);
     } else {
       showAlert('Alert', 'Update project failed!', AppColor.textDanger);

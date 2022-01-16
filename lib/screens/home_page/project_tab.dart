@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:limasembilan_todo_app/controller/auth_controller.dart';
 import 'package:limasembilan_todo_app/controller/project_controller.dart';
 import 'package:limasembilan_todo_app/controller/user_controller.dart';
 import 'package:limasembilan_todo_app/models/project_model.dart';
@@ -17,8 +15,8 @@ class ProjectTab extends StatelessWidget {
     // AuthController authC = Get.find<AuthController>();
     ProjectController projectC = Get.find<ProjectController>();
     return Obx(() {
-      List<ProjectModel> projects = projectC.projects;
-      debugPrint(projects.length.toString());
+      // List<ProjectModel> projects = projectC.projects;
+      // debugPrint(projects.length.toString());
       return Container(
         padding: const EdgeInsets.only(
           right: 30,
@@ -81,7 +79,7 @@ class ProjectTab extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             Text(
-              '${contributorsCount} contributors',
+              '$contributorsCount contributors',
               style: const TextStyle(
                 fontSize: TextSize.body2,
                 color: AppColor.textSecondary,

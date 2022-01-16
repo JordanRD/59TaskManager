@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:limasembilan_todo_app/controller/add_project_page_controller.dart';
 import 'package:limasembilan_todo_app/controller/add_task_page_controller.dart';
 import 'package:limasembilan_todo_app/shared/app_theme.dart';
 
@@ -35,6 +34,7 @@ class AddTaskPage extends StatelessWidget {
                 const SizedBox(height: 30),
                 const Text('Name'),
                 TextField(
+                  autofocus: true,
                   controller: controller.titleController,
                   decoration: const InputDecoration(
                     hintText: 'task name',
@@ -115,7 +115,7 @@ class AddTaskPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
                 const Text(
-                  'Sub Task',
+                  'Todo',
                   style: TextStyle(
                     color: AppColor.primaryColor,
                     fontSize: TextSize.heading3,
@@ -163,7 +163,7 @@ class AddTaskPage extends StatelessWidget {
                         onEditingComplete: () => controller.onClickAddSubTask(),
                         controller: controller.subTaskController,
                         decoration: const InputDecoration(
-                          hintText: 'add sub task',
+                          hintText: 'add todo',
                         ),
                       ),
                     ),

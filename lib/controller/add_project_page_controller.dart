@@ -41,7 +41,7 @@ class AddProjectPageController extends GetxController {
           AppColor.textDanger,
         );
       } else {
-        Get.back();
+        Get.back(closeOverlays: true);
         showAlert('Success', 'New Project Added', AppColor.text);
       }
     }

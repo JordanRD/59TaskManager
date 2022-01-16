@@ -34,6 +34,7 @@ class AddUserPage extends StatelessWidget {
                 // const SizedBox(height: 15),
                 const Text('Username'),
                 TextField(
+                  autofocus: true,
                   controller: controller.nameController,
                   decoration: const InputDecoration(
                     hintText: 'username',

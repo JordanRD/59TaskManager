@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:limasembilan_todo_app/controller/project_controller.dart';
 import 'package:limasembilan_todo_app/controller/project_detail_page_controller.dart';
 import 'package:limasembilan_todo_app/models/sub_task_model.dart';
 import 'package:limasembilan_todo_app/models/task_model.dart';
@@ -51,21 +50,20 @@ class AddTaskController extends GetxController {
     }
 
     final newTask = TaskModel(
-      '',
-      titleController.text,
-      descriptionController.text,
-      dueDate.value.millisecondsSinceEpoch,
-      subTasks,
-      DateTime.now().millisecondsSinceEpoch,
-      false
-    );
+        '',
+        titleController.text.trim(),
+        descriptionController.text.trim(),
+        dueDate.value.millisecondsSinceEpoch,
+        subTasks,
+        DateTime.now().millisecondsSinceEpoch,
+        false);
     final projectController = Get.find<ProjectDetailController>();
     final taskService = TaskServices();
     String? resp = await taskService.addTask(
         projectController.currentProject.value.projectId!, newTask);
     // print('ininini --->>>$resp');
     if (resp != null) {
-      Get.back();
+      Get.back(closeOverlays: true);
       showAlert('Sucess', 'task created', AppColor.text);
     } else {
       showAlert('Fail', 'create task failed!\nplease try again later.',
